@@ -41,8 +41,7 @@
 #ifndef BS_NRF_ECB_H__
 #define BS_NRF_ECB_H__
 
-#include "nrf_soc_if.h"
-#include "../drivers/nrfx_common.h"
+#include <nrfx.h>
 
 #ifdef __cplusplus
 extern "C" {

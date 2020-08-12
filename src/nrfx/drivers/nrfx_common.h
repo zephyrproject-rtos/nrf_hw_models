@@ -50,6 +50,16 @@
 extern "C" {
 #endif
 
+/*
+ * Suppress use of anomaly workarounds in nrfx drivers that would directly
+ * access hardware registers.
+ */
+#define USE_WORKAROUND_FOR_ANOMALY_132 0
+
+#ifndef __STATIC_INLINE
+#define __STATIC_INLINE static inline
+#endif
+
 #ifndef NRFX_STATIC_INLINE
 #ifdef NRFX_DECLARE_ONLY
 #define NRFX_STATIC_INLINE
@@ -209,10 +219,37 @@ NRF_STATIC_INLINE IRQn_Type nrfx_get_irq_number(void const * p_reg)
     return (IRQn_Type)NRFX_IRQ_NUMBER_GET(p_reg);
 }
 
+/**
+ * @brief IRQ handler type.
+ */
+typedef void (*nrfx_irq_handler_t)(void);
+
+/**@brief Macro for waiting until condition is met.
+ *
+ * @param[in]  condition Condition to meet.
+ * @param[in]  attempts  Maximum number of condition checks. Must not be 0.
+ * @param[in]  delay_us  Delay between consecutive checks, in microseconds.
+ * @param[out] result    Boolean variable to store the result of the wait process.
+ *                       Set to true if the condition is met or false otherwise.
+ */
+#define NRFX_WAIT_FOR(condition, attempts, delay_us, result) \
+do {                                                         \
+    result =  false;                                         \
+    uint32_t remaining_attempts = (attempts);                \
+    do {                                                     \
+           if (condition)                                    \
+           {                                                 \
+               result =  true;                               \
+               break;                                        \
+           }                                                 \
+           NRFX_DELAY_US(delay_us);                          \
+    } while (--remaining_attempts);                          \
+} while(0)
+
 /** @} */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // NRFX_COMMON_H__
+#endif // BS_NRFX_COMMON_H__

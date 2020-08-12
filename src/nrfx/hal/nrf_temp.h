@@ -6,6 +6,6 @@
 #ifndef BS_NRF_TEMP_H__
 #define BS_NRF_TEMP_H__
 
-#include "../drivers/nrfx_common.h"
+#include <nrfx.h>
 
 #endif /* BS_NRF_TEMP_H__ */
