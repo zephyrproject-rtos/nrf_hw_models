@@ -381,6 +381,18 @@ NRF_STATIC_INLINE bool nrf_clock_event_check(NRF_CLOCK_Type const * p_reg, nrf_c
     return (bool)*((volatile uint32_t *)((uint8_t *)p_reg + event));
 }
 
+NRF_STATIC_INLINE uint32_t nrf_clock_task_address_get(NRF_CLOCK_Type const * p_reg,
+                                                      nrf_clock_task_t       task)
+{
+    return 0;
+}
+
+NRF_STATIC_INLINE uint32_t nrf_clock_event_address_get(NRF_CLOCK_Type const * p_reg,
+                                                      nrf_clock_event_t       event)
+{
+    return 0;
+}
+
 NRF_STATIC_INLINE bool nrf_clock_start_task_check(NRF_CLOCK_Type const * p_reg,
                                                   nrf_clock_domain_t     domain)
 {
