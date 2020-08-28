@@ -18,22 +18,15 @@ if(CONFIG_BOARD_NRF52_BSIM)
  https://babblesim.github.io/folder_structure_and_env.html")
   endif()
 
-  # These include directories must be added before those from the hal_nordic
-  # module, so that the local modified versions of nrfx files are used instead
-  # of those from the original nrfx.
-  target_include_directories(zephyr_interface BEFORE INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/nrfx/
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/nrfx/hal/
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/nrfx/mdk/
-  )
-
   zephyr_include_directories(
     src/HW_models/
   )
 
   zephyr_library()
   zephyr_library_compile_definitions(NO_POSIX_CHEATS)
+
+  # The bsim hw model models the nRF52832
+  zephyr_compile_definitions(NRF52832_XXAA)
 
   file(GLOB_RECURSE HW_MODEL_SRCS . src/*.c)
   zephyr_library_sources(${HW_MODEL_SRCS})
@@ -44,7 +37,6 @@ if(CONFIG_BOARD_NRF52_BSIM)
     $ENV{BSIM_COMPONENTS_PATH}/ext_2G4_libPhyComv1/src/
     $ENV{BSIM_COMPONENTS_PATH}/libRandv2/src/
     src/HW_models/
-    src/nrfx/
   )
 
 endif()

@@ -5,7 +5,7 @@
  *
  * Note that the function prototypes are taken from the NRFx HAL
  */
-#include "nrf_timer.h"
+#include "hal/nrf_timer.h"
 #include "bs_tracing.h"
 #include "NRF_TIMER.h"
 
@@ -92,3 +92,69 @@ void nrf_timer_mode_set(NRF_TIMER_Type * p_reg,
     p_reg->MODE = (p_reg->MODE & ~TIMER_MODE_MODE_Msk) |
                   ((mode << TIMER_MODE_MODE_Pos) & TIMER_MODE_MODE_Msk);
 }
+
+NRF_STATIC_INLINE void nrf_timer_event_clear(NRF_TIMER_Type *  p_reg,
+                                             nrf_timer_event_t event)
+{
+    *((volatile uint32_t *)((uint8_t *)p_reg + (uint32_t)event)) = 0x0UL;
+#if __CORTEX_M == 0x04
+    volatile uint32_t dummy = *((volatile uint32_t *)((uint8_t *)p_reg + (uint32_t)event));
+    (void)dummy;
+#endif
+}
+
+NRF_STATIC_INLINE bool nrf_timer_event_check(NRF_TIMER_Type const * p_reg,
+                                             nrf_timer_event_t      event)
+{
+    return (bool)*(volatile uint32_t *)((uint8_t *)p_reg + (uint32_t)event);
+}
+
+NRF_STATIC_INLINE void nrf_timer_shorts_enable(NRF_TIMER_Type * p_reg,
+                                               uint32_t         mask)
+{
+    p_reg->SHORTS |= mask;
+}
+
+NRF_STATIC_INLINE void nrf_timer_shorts_disable(NRF_TIMER_Type * p_reg,
+                                                uint32_t         mask)
+{
+    p_reg->SHORTS &= ~(mask);
+}
+
+NRF_STATIC_INLINE uint32_t nrf_timer_int_enable_check(NRF_TIMER_Type const * p_reg, uint32_t mask)
+{
+    return p_reg->INTENSET & mask;
+}
+
+NRF_STATIC_INLINE void nrf_timer_bit_width_set(NRF_TIMER_Type *      p_reg,
+                                               nrf_timer_bit_width_t bit_width)
+{
+    p_reg->BITMODE = (p_reg->BITMODE & ~TIMER_BITMODE_BITMODE_Msk) |
+                     ((bit_width << TIMER_BITMODE_BITMODE_Pos) &
+                     TIMER_BITMODE_BITMODE_Msk);
+}
+
+NRF_STATIC_INLINE void nrf_timer_frequency_set(NRF_TIMER_Type *      p_reg,
+                                               nrf_timer_frequency_t frequency)
+{
+    p_reg->PRESCALER = (p_reg->PRESCALER & ~TIMER_PRESCALER_PRESCALER_Msk) |
+                       ((frequency << TIMER_PRESCALER_PRESCALER_Pos) &
+                       TIMER_PRESCALER_PRESCALER_Msk);
+}
+
+NRF_STATIC_INLINE uint32_t nrf_timer_cc_get(NRF_TIMER_Type const * p_reg,
+                                            nrf_timer_cc_channel_t cc_channel)
+{
+    return (uint32_t)p_reg->CC[cc_channel];
+}
+
+NRF_STATIC_INLINE nrf_timer_task_t nrf_timer_capture_task_get(uint32_t channel)
+{
+    return (nrf_timer_task_t)NRFX_OFFSETOF(NRF_TIMER_Type, TASKS_CAPTURE[channel]);
+}
+
+NRF_STATIC_INLINE nrf_timer_event_t nrf_timer_compare_event_get(uint32_t channel)
+{
+    return (nrf_timer_event_t)NRFX_OFFSETOF(NRF_TIMER_Type, EVENTS_COMPARE[channel]);
+}
+

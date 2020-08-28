@@ -13,7 +13,9 @@ INCLUDES:=-I${libUtilv1_COMP_PATH}/src/ \
           -I${2G4_libPhyComv1_COMP_PATH}/src \
           -I${libRandv2_COMP_PATH}/src/ \
           -Isrc/HW_models/ \
-          -Isrc/nrfx/
+          -I${NRFX_BASE} \
+          -I${NRFX_BASE}/mdk \
+          -I.
 
 LIB_NAME:=libNRF52_hw_models.32
 A_LIBS:=
@@ -25,7 +27,8 @@ ARCH:=-m32
 WARNINGS:=-Wall -pedantic
 COVERAGE:=
 CFLAGS:=${ARCH} ${DEBUG} ${OPT} ${WARNINGS} -MMD -MP -std=c11 \
-        ${INCLUDES} -fdata-sections -ffunction-sections
+        ${INCLUDES} -fdata-sections -ffunction-sections \
+        -DNRF52832_XXAA
 LDFLAGS:=${ARCH} ${COVERAGE}
 CPPFLAGS:=
 

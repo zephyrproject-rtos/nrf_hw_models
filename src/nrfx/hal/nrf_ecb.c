@@ -5,7 +5,7 @@
  *
  * Note that the function prototypes are taken from the NRFx HAL
  */
-#include "nrf_ecb.h"
+#include "hal/nrf_ecb.h"
 #include "bs_tracing.h"
 #include "NRF_AES_ECB.h"
 
@@ -23,6 +23,16 @@ void nrf_ecb_task_trigger(NRF_ECB_Type * p_reg, nrf_ecb_task_t task)
 
 }
 
+void nrf_ecb_event_clear(NRF_ECB_Type * p_reg, nrf_ecb_event_t event)
+{
+    *((volatile uint32_t *)((uint8_t *)p_reg + (uint32_t)event)) = 0x0UL;
+}
+
+bool nrf_ecb_event_check(NRF_ECB_Type const * p_reg, nrf_ecb_event_t event)
+{
+    return (bool)*(volatile uint32_t *)((uint8_t *)p_reg + (uint32_t)event);
+}
+
 void nrf_ecb_int_enable(NRF_ECB_Type * p_reg, uint32_t mask)
 {
   p_reg->INTENSET = mask;
@@ -34,3 +44,14 @@ void nrf_ecb_int_disable(NRF_ECB_Type * p_reg, uint32_t mask)
   p_reg->INTENCLR = mask;
   nrf_ecb_regw_sideeffects_INTENCLEAR();
 }
+
+void nrf_ecb_data_pointer_set(NRF_ECB_Type * p_reg, void const * p_buffer)
+{
+    p_reg->ECBDATAPTR = (uint32_t)p_buffer;
+}
+
+void * nrf_ecb_data_pointer_get(NRF_ECB_Type const * p_reg)
+{
+    return (void *)(p_reg->ECBDATAPTR);
+}
+

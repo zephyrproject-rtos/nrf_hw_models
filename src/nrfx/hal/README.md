@@ -1,7 +1,7 @@
 ## nRFx HAL
 
-The HAL provided with this models is a modified version of the
-[real nRFx HAL](https://github.com/NordicSemiconductor/nrfx/)
+The HAL source files provided with this models implements the
+hal interface [real nRFx HAL](https://github.com/NordicSemiconductor/nrfx/)
 Its main purpose is to allow unmodified Zephyr code to run directly
 using this repository HW models.
 

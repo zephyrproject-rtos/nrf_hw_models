@@ -5,9 +5,52 @@
  *
  * Note that the function prototypes are taken from the NRFx HAL
  */
-#include "nrf_rtc.h"
+#include "hal/nrf_rtc.h"
 #include "bs_tracing.h"
 #include "NRF_RTC.h"
+
+
+uint32_t nrf_rtc_cc_get(NRF_RTC_Type const * p_reg, uint32_t ch)
+{
+    return p_reg->CC[ch];
+}
+
+uint32_t nrf_rtc_int_enable_check(NRF_RTC_Type const * p_reg, uint32_t mask)
+{
+    return p_reg->INTENSET & mask;
+}
+
+bool nrf_rtc_event_check(NRF_RTC_Type const * p_reg, nrf_rtc_event_t event)
+{
+    return (bool)*(volatile uint32_t *)((uint8_t *)p_reg + (uint32_t)event);
+}
+
+void nrf_rtc_event_clear(NRF_RTC_Type * p_reg, nrf_rtc_event_t event)
+{
+    *((volatile uint32_t *)((uint8_t *)p_reg + (uint32_t)event)) = 0;
+}
+
+void nrf_rtc_prescaler_set(NRF_RTC_Type * p_reg, uint32_t val)
+{
+    p_reg->PRESCALER = val;
+}
+
+uint32_t nrf_rtc_event_address_get(NRF_RTC_Type const * p_reg,
+                                                     nrf_rtc_event_t      event)
+{
+    return (uint32_t)p_reg + event;
+}
+
+uint32_t nrf_rtc_task_address_get(NRF_RTC_Type const * p_reg,
+                                                    nrf_rtc_task_t       task)
+{
+    return (uint32_t)p_reg + task;
+}
+
+nrf_rtc_event_t nrf_rtc_compare_event_get(uint8_t index)
+{
+    return (nrf_rtc_event_t)NRFX_OFFSETOF(NRF_RTC_Type, EVENTS_COMPARE[index]);
+}
 
 static int rtc_number_from_ptr(NRF_RTC_Type const * p_reg){
   int i = ( (int)p_reg - (int)&NRF_RTC_regs[0] ) / sizeof(NRF_RTC_Type);
