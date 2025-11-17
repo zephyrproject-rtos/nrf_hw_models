@@ -12,8 +12,8 @@
 #ifndef NRF_BSIM_H__
 #define NRF_BSIM_H__
 
-/* Include the real nrf.h */
-#include <mdk/nrf.h>
+/* Include the nrf from stable MDK. */
+#include <bsp/stable/mdk/nrf.h>
 
 /* For BSIM we require redefining the pointers to the peripherals. */
 #include "nrf_bsim_redef.h"
