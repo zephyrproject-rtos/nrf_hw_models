@@ -311,7 +311,7 @@ void *nhw_convert_periph_base_addr(void *hw_addr) {
 //{(void *)NRF_CTRLAP_NS_BASE      ,0x41006000UL},
 {(void *)(&NRF_RADIO_regs)       ,0x41008000UL},
 {(void *)(&NRF_RNG_regs)         ,0x41009000UL},
-//{(void *)NRF_GPIOTE_NS_BASE      ,0x4100A000UL},
+{(void *)NRF_GPIOTE_NS_BASE      ,0x4100A000UL},
 //{(void *)NRF_WDT_NS_BASE         ,0x4100B000UL},
 {(void *)(&NRF_TIMER_regs[NHW_TIMER_NET0])      ,0x4100C000UL},
 {(void *)(&NRF_ECB_regs)         ,0x4100D000UL},
