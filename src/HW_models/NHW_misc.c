@@ -10,7 +10,7 @@
 #include "NHW_config.h"
 #include "NHW_peri_types.h"
 #include "NHW_virt_RAM.h"
-#include "nrf_bsim_redef.h"
+#include "mdk/nrf_bsim_redef.h"
 
 /*
  * Get the name of a core/domain
