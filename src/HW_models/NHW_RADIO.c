@@ -1035,7 +1035,7 @@ static void start_Tx(void) {
   main_packet_size = header_len + payload_len + crc_len;
 
   bs_time_t payload_start_time;
-  bs_time_t main_packet_start_time;
+  bs_time_t main_packet_start_time; /* Phy time */
 
   if (tx_status.codedphy) {
     tx_status.ADDRESS_end_time = nsi_hws_get_time() + (bs_time_t)(80 + 256 - nhwra_timings_get_TX_chain_delay());
@@ -1045,8 +1045,8 @@ static void start_Tx(void) {
 
     nhwra_prep_tx_request(&tx_status.tx_req_fec1, 1, fec1_duration, hwll_phy_time_from_dev(nsi_hws_get_time()), 8);
     update_abort_struct(&tx_status.tx_req_fec1.abort, &abort_next_recheck_time);
-    main_packet_start_time = tx_status.tx_req_fec1.end_tx_time + 1;
-    tx_status.FEC2_start_time = main_packet_start_time; /* in air */
+    main_packet_start_time = tx_status.tx_req_fec1.end_tx_time + 1; /* in air, Phy time */
+    tx_status.FEC2_start_time = nsi_hws_get_time() + fec1_duration + 1; /* in air, device time */
   } else {
     tx_status.ADDRESS_end_time = nsi_hws_get_time() + (bs_time_t)((preamble_len*8 + address_len*8)/bits_per_us) - nhwra_timings_get_TX_chain_delay();
     payload_start_time = tx_status.ADDRESS_end_time;
