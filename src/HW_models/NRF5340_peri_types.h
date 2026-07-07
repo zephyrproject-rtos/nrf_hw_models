@@ -5411,6 +5411,32 @@ typedef struct {                                /*!< (@ 0x50003000) SPU_S Struct
   __IOM SPU_PERIPHID_Type PERIPHID[256];        /*!< (@ 0x00000800) Unspecified                                                */
 } NRF_SPU_Type;                                 /*!< Size = 3072 (0xc00)                                                       */
 
+/* =========================================================================================================================== */
+/* ================                                      OSCILLATORS_NS                                       ================ */
+/* =========================================================================================================================== */
+
+
+/**
+  * @brief OSCILLATORS_XOSC32KI [XOSC32KI] (Unspecified)
+  */
+typedef struct {
+  __IOM uint32_t  BYPASS;                       /*!< Enable or disable bypass of LFCLK crystal oscillator with external
+                                                     clock source                                                              */
+  __IM  uint32_t  RESERVED[3];
+  __IOM uint32_t  INTCAP;                       /*!< Control usage of internal load capacitors                                 */
+} OSCILLATORS_XOSC32KI_Type;                    /*!< Size = 20 (0x14)                                                          */
+
+
+/**
+  * @brief Oscillator control 0 (OSCILLATORS_NS)
+  */
+
+typedef struct {                                /*!< OSCILLATORS_NS Structure                                                  */
+  __IM  uint32_t  RESERVED[369];
+  __IOM uint32_t  XOSC32MCAPS;                  /*!< Programmable capacitance of XC1 and XC2                                   */
+  __IM  uint32_t  RESERVED1[62];
+  __IOM OSCILLATORS_XOSC32KI_Type XOSC32KI;     /*!< Unspecified                                                               */
+} NRF_OSCILLATORS_Type;                         /*!< Size = 1748 (0x6d4)                                                       */
 
 /* =========================================================================================================================== */
 /* ================                                          TEMP                                             ================ */
