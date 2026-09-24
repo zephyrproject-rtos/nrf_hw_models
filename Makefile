@@ -41,6 +41,7 @@ NRF54LS05:
 NRF54L15:
 	@$(MAKE) --no-print-directory -f 54L15.mk hw install
 	@$(MAKE) --no-print-directory -f 54L15.mk hal_app install
+	@$(MAKE) --no-print-directory -f 54L15.mk hal_flpr install
 
 NRF54LM20:
 	@$(MAKE) --no-print-directory -f 54LM20.mk hw install

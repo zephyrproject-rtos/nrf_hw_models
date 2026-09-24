@@ -57,7 +57,7 @@ CPPFLAGS:=
 
 include make_inc/common_post.mk
 
-.PHONY: hw hal_net hal_app
+.PHONY: hw hal_app hal_flpr
 
 # Let's explicitly tell make there is rule to make this file 
 54L15.mk: ;
