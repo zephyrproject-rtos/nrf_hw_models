@@ -177,7 +177,8 @@
 #include "hal/nrf_radio.h"
 #endif
 
-#ifdef REGULATORS_PRESENT
+#if defined(REGULATORS_PRESENT) && !defined(NRF_FLPR)
+/* This code uses ARM specific intrinsics, let's skip it for flpr builds by now */
 #include "hal/nrf_regulators.h"
 #endif
 
