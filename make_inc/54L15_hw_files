@@ -6,6 +6,7 @@ src/HW_models/irq_ctrl.c
 src/HW_models/trivial_xo.c
 src/HW_models/weak_stubs.c
 src/HW_models/HW_utils.c
+src/HW_models/HW_irq_router.c
 src/HW_models/NRF_HWLowL.c
 src/HW_models/NHW_misc.c
 src/HW_models/NHW_misc.54L15.c

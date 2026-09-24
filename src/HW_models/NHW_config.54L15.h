@@ -117,6 +117,18 @@
 #define NHW_INTCTRL_TOTAL_INST 2
 #define NHW_INTCTRL_MAX_INTLINES 271
 
+/* IRQ Controllers are 0: M33 NVIC ; 1: VPR */
+#define NHW_HAS_INTROUTER 1
+#define NHW_IRQRTR_NBR_GLB_LINES NHW_INTCTRL_MAX_INTLINES
+
+#define NHW_IRQRTR_MAPPING { \
+  /* Preset the whole table to -2 (HW_IRQR_DISCONNECTED), 0 */ \
+  [0 ... NHW_IRQRTR_NBR_GLB_LINES - 1][0 ... NHW_INTCTRL_TOTAL_INST - 1] = {-2, 0} \
+/* Table format : */ \
+/* [Router global interrupt nbr] = { {ctrl,line}, {ctrl,line}..} \ */ \
+ \
+}
+
 /* These names are taken from the IRQn_Type in the MDK header */
 #define NHW_INT_NAMES { [0 /*Application core*/] = {\
 [28 ]="SWI00",\
