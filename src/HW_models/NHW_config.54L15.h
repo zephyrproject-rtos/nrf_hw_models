@@ -11,9 +11,9 @@
 #define NHW_AARCCMECB_TOTAL_INST 1
 #define NHW_AARCCMECB_00 0
 #define NHW_AARCCMECB_DPPI_MAP {0} /* Global */
-#define NHW_AARCCM_INTMAP {{0, 70}}
-                         /* AAR00_CCM00_IRQn */
-#define NHW_ECB_INTMAP {{0, 71}}
+#define NHW_AARCCM_INTMAP {{-1, 70}}
+                         /* Router, AAR00_CCM00_IRQn */
+#define NHW_ECB_INTMAP {{-1, 71}}
                         /* ECB00_IRQn */
 #define NHW_AARCCMECB_CLOCK {128} /* MHz */
 #define NHW_ECB_t_ECB {1} /* In micros (~73cc/128MHz in real HW)*/
@@ -22,7 +22,7 @@
 #define NHW_CLKPWR_54L_MODEL 1
 #define NHW_CLKPWR_0 0
 #define NHW_CLKPWR_DPPI_MAP {0} /* Global */
-#define NHW_CLKPWR_INT_MAP {{0, 261}} /* {App, CLOCK_POWER_IRQn} */
+#define NHW_CLKPWR_INT_MAP {{-1, 261}} /* {Router, CLOCK_POWER_IRQn} */
 #define NHW_CLKPWR_HAS_POWER 1
 #define NHW_CLKPWR_HAS_LFCLK 1
 #define NHW_CLKPWR_CLK_MAX_N_SRCS 3
@@ -39,7 +39,7 @@
 
 #define NHW_CRACEN_TOTAL_INST 1
 /* #define NHW_CRACEN_DDPI_MAP no PPI events from CRACEN */
-#define NHW_CRACEN_INT_MAP {{0, 72}} /* {App, CRACEN_IRQn} */
+#define NHW_CRACEN_INT_MAP {{-1, 72}} /* {Router, CRACEN_IRQn} */
 #define NHW_CRACEN_RNG_G_log2fifodepth 4 /* log2 of the FIFO depth in 32bit words */
 #define NHW_CRACEN_RNG_V 1
 #define NHW_CRACEN_FREQ_MHZ 128
@@ -62,11 +62,11 @@
 #define NHW_EGU_TOTAL_INST 2
 #define NHW_EGU_10 0
 #define NHW_EGU_20 1
-#define NHW_EGU_INT_MAP {{0 , 135}, \
-                         {0 , 201}, \
+#define NHW_EGU_INT_MAP {{-1 , 135}, \
+                         {-1 , 201}, \
                         }
-                        /* {App, EGU10}
-                         * {App, EGU20}
+                        /* {Router, EGU10}
+                         * {Router, EGU20}
                          * */
 #define NHW_EGU_DPPI_MAP {1, 2} /* Radio, Peri */
 #define NHW_EGU_N_EVENTS {16, 6}
@@ -86,26 +86,26 @@
 #define NHW_GPIOTE_MAX_CHANNELS 8    /* Maximum number of channels in any instance */
 #define NHW_GPIOTE_CHANNELS {8, 4}   /* Number of channels per instance */
 #define NHW_GPIOTE_N_INT 2 /* Number of interrupts lines, common for all instances */
-#define NHW_GPIOTE_INT_MAP {{{0, 218},  \
-                             {0, 219}}, \
-                            {{0, 268},  \
-                             {0, 269}}}
-                            /* App, GPIOTE20_0_IRQn */
-                            /* App, GPIOTE20_1_IRQn */
-                            /* App, GPIOTE30_0_IRQn */
-                            /* App, GPIOTE30_1_IRQn */
+#define NHW_GPIOTE_INT_MAP {{{-1, 218},  \
+                             {-1, 219}}, \
+                            {{-1, 268},  \
+                             {-1, 269}}}
+                            /* Router, GPIOTE20_0_IRQn */
+                            /* Router, GPIOTE20_1_IRQn */
+                            /* Router, GPIOTE30_0_IRQn */
+                            /* Router, GPIOTE30_1_IRQn */
 #define NHW_GPIOTE_DPPI_MAP {2, 3} /* GPIOTE20 in Peri , GPIOTE30 in LP */
 #define NHW_GPIOTE_IS_54 1
 
 #define NHW_GRTC_TOTAL_INST 1
 #define NHW_GRTC_N_INT 4
 #define NHW_GRTC_INT_MAP { \
-                           {0 , 226}, \
-                           {0 , 227}, \
-                           {0 , 228}, \
-                           {0 , 229}, \
+                           {-1, 226}, \
+                           {-1, 227}, \
+                           {-1, 228}, \
+                           {-1, 229}, \
                          }
-                        /* {App, GRTC_0..3_IRQn} */
+                        /* {Router, GRTC_0..3_IRQn} */
 #define NHW_GRTC_DPPI_MAP {2 /* Peripheral domain */}
 #define NHW_GRTC_N_CC 12
 #define NHW_GRTC_N_DOMAINS 4
@@ -117,16 +117,68 @@
 #define NHW_INTCTRL_TOTAL_INST 2
 #define NHW_INTCTRL_MAX_INTLINES 271
 
-/* IRQ Controllers are 0: M33 NVIC ; 1: VPR */
+/* IRQ Controllers are 0: M33 NVIC ; 1: FLPR */
 #define NHW_HAS_INTROUTER 1
 #define NHW_IRQRTR_NBR_GLB_LINES NHW_INTCTRL_MAX_INTLINES
 
+/* Note: This router irq numbering matches the M33 numbering for simplicity */
 #define NHW_IRQRTR_MAPPING { \
   /* Preset the whole table to -2 (HW_IRQR_DISCONNECTED), 0 */ \
-  [0 ... NHW_IRQRTR_NBR_GLB_LINES - 1][0 ... NHW_INTCTRL_TOTAL_INST - 1] = {-2, 0} \
+  [0 ... NHW_IRQRTR_NBR_GLB_LINES - 1][0 ... NHW_INTCTRL_TOTAL_INST - 1] = {-2, 0}, \
 /* Table format : */ \
 /* [Router global interrupt nbr] = { {ctrl,line}, {ctrl,line}..} \ */ \
- \
+  [64  /* SPU00        */] = {{0, 64 }, {1, 64 }}, \
+  [65  /* MPC00        */] = {{0, 65 }, {1, 65 }}, \
+  [70  /* AAR00_CCM00  */] = {{0, 70 }, {1, 70 }}, \
+  [71  /* ECB00        */] = {{0, 71 }, {1, 71 }}, \
+  [72  /* CRACEN       */] = {{0, 72 }, {1, 72 }}, \
+  [74  /* SERIAL00     */] = {{0, 74 }, {1, 74 }}, \
+  [75  /* RRAMC        */] = {{0, 75 }, {1, 75 }}, \
+  [76  /* VPR00        */] = {{0, 76 }, {1, 76 }}, \
+  [82  /* CTRLAP       */] = {{0, 82 }, {1, 82 }}, \
+  [84  /* CM33SS       */] = {{0, 84 }, {1, 84 }}, \
+  [85  /* TIMER00      */] = {{0, 85 }, {1, 85 }}, \
+  [128 /*  SPU10       */] = {{0, 128}, {1, 128}}, \
+  [133 /*  TIMER10     */] = {{0, 133}, {1, 133}}, \
+  [135 /*  EGU10       */] = {{0, 135}, {1, 135}}, \
+  [138 /*  RADIO_0     */] = {{0, 138}, {1, 138}}, \
+  [139 /*  RADIO_1     */] = {{0, 139}, {1, 139}}, \
+  [192 /*  SPU20       */] = {{0, 192}, {1, 192}}, \
+  [198 /*  SERIAL20    */] = {{0, 198}, {1, 198}}, \
+  [199 /*  SERIAL21    */] = {{0, 199}, {1, 199}}, \
+  [200 /*  SERIAL22    */] = {{0, 200}, {1, 200}}, \
+  [201 /*  EGU20       */] = {{0, 201}, {1, 201}}, \
+  [202 /*  TIMER20     */] = {{0, 202}, {1, 202}}, \
+  [203 /*  TIMER21     */] = {{0, 203}, {1, 203}}, \
+  [204 /*  TIMER22     */] = {{0, 204}, {1, 204}}, \
+  [205 /*  TIMER23     */] = {{0, 205}, {1, 205}}, \
+  [206 /*  TIMER24     */] = {{0, 206}, {1, 206}}, \
+  [208 /*  PDM20       */] = {{0, 208}, {1, 208}}, \
+  [209 /*  PDM21       */] = {{0, 209}, {1, 209}}, \
+  [210 /*  PWM20       */] = {{0, 210}, {1, 210}}, \
+  [211 /*  PWM21       */] = {{0, 211}, {1, 211}}, \
+  [212 /*  PWM22       */] = {{0, 212}, {1, 212}}, \
+  [213 /*  SAADC       */] = {{0, 213}, {1, 213}}, \
+  [214 /*  NFCT        */] = {{0, 214}, {1, 214}}, \
+  [215 /*  TEMP        */] = {{0, 215}, {1, 215}}, \
+  [218 /*  GPIOTE20_0  */] = {{0, 218}, {1, 218}}, \
+  [219 /*  GPIOTE20_1  */] = {{0, 219}, {1, 219}}, \
+  [220 /*  TAMPC       */] = {{0, 220}, {1, 220}}, \
+  [221 /*  I2S20       */] = {{0, 221}, {1, 221}}, \
+  [224 /*  QDEC20      */] = {{0, 224}, {1, 224}}, \
+  [225 /*  QDEC21      */] = {{0, 225}, {1, 225}}, \
+  [226 /*  GRTC_0      */] = {{0, 226}, {1, 226}}, \
+  [227 /*  GRTC_1      */] = {{0, 227}, {1, 227}}, \
+  [228 /*  GRTC_2      */] = {{0, 228}, {1, 228}}, \
+  [229 /*  GRTC_3      */] = {{0, 229}, {1, 229}}, \
+  [256 /*  SPU30       */] = {{0, 256}, {1, 256}}, \
+  [260 /*  SERIAL30    */] = {{0, 260}, {1, 260}}, \
+  [261 /*  CLOCK_POWER */] = {{0, 261}, {1, 261}}, \
+  [262 /*  COMP_LPCOMP */] = {{0, 262}, {1, 262}}, \
+  [264 /*  WDT30       */] = {{0, 264}, {1, 264}}, \
+  [265 /*  WDT31       */] = {{0, 265}, {1, 265}}, \
+  [268 /*  GPIOTE30_0  */] = {{0, 268}, {1, 268}}, \
+  [269 /*  GPIOTE30_1  */] = {{0, 269}, {1, 269}}, \
 }
 
 /* These names are taken from the IRQn_Type in the MDK header */
@@ -302,10 +354,10 @@
 #define NHW_RADIO_TOTAL_INST 1
 #define NHW_RADIO_0 0
 #define NHW_RADIO_N_INT 2
-#define NHW_RADIO_INT_MAP {{0 , 138}, \
-                           {0 , 139}}
-                          /*{App, RADIO_0_IRQn},
-                           *{App, RADIO_1_IRQn} */
+#define NHW_RADIO_INT_MAP {{-1, 138}, \
+                           {-1, 139}}
+                          /*{Router, RADIO_0_IRQn},
+                           *{Router, RADIO_1_IRQn} */
 #define NHW_RADIO_DPPI_MAP {1} /* Radio domain */
 #define NHW_RADIO_ED_RSSIOFFS (-92)
 #define NHW_RADIO_IS_54 1
@@ -333,7 +385,7 @@
 
 #define NHW_TEMP_TOTAL_INST 1
 #define NHW_TEMP_APP0 0
-#define NHW_TEMP_INT_MAP {{0 , 215}} /*App core,TEMP_IRQn*/
+#define NHW_TEMP_INT_MAP {{-1, 215}} /*Router,TEMP_IRQn*/
 #define NHW_TEMP_DPPI_MAP {2} /*Peri domain*/
 #define NHW_TEMP_t_TEMP 36 /* microseconds, Unknown, assuming by now same as 52833 & 5340 */
 #define NHW_TEMP_FBITS  2 /* fractional bits => 0.25C resolution */
@@ -346,14 +398,14 @@
 #define NHW_TIMER_22 4
 #define NHW_TIMER_23 5
 #define NHW_TIMER_24 6
-#define NHW_TIMER_INT_MAP {{0 , 85}, \
-                           {0 , 133}, \
-                           {0 , 202}, \
-                           {0 , 203}, \
-                           {0 , 204}, \
-                           {0 , 205}, \
-                           {0 , 206}, \
-                          } /* App, TIMER00..24_IRQn */
+#define NHW_TIMER_INT_MAP {{-1, 85}, \
+                           {-1, 133}, \
+                           {-1, 202}, \
+                           {-1, 203}, \
+                           {-1, 204}, \
+                           {-1, 205}, \
+                           {-1, 206}, \
+                          } /* Router, TIMER00..24_IRQn */
 #define NHW_TIMER_HAS_ONE_SHOT 1
 #define NHW_TIMER_N_CC {6, 8, 6, 6, 6, 6, 6}
 #define NHW_TIMER_MAX_N_CC 8
@@ -367,16 +419,16 @@
 #define NHW_UARTE21 2
 #define NHW_UARTE22 3
 #define NHW_UARTE30 4
-#define NHW_UARTE_INT_MAP {{0 , 74}, \
-                          {0 , 198}, \
-                          {0 , 199}, \
-                          {0 , 200}, \
-                          {0 , 260}, \
-                          } /* App, SERIAL00_IRQn,
-                               App, SERIAL20_IRQn,
-                               App, SERIAL21_IRQn,
-                               App, SERIAL22_IRQn,
-                               App, SERIAL30_IRQn,
+#define NHW_UARTE_INT_MAP {{-1, 74}, \
+                          {-1, 198}, \
+                          {-1, 199}, \
+                          {-1, 200}, \
+                          {-1, 260}, \
+                          } /* Router, SERIAL00_IRQn,
+                               Router, SERIAL20_IRQn,
+                               Router, SERIAL21_IRQn,
+                               Router, SERIAL22_IRQn,
+                               Router, SERIAL30_IRQn,
                                */
 #define NHW_UARTE_DPPI_MAP {0, 2, 2, 2, 3} /* Global, 4xPeri, LP */
 #define NHW_UARTE_HAS_UART 0
