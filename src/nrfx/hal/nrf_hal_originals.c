@@ -270,6 +270,10 @@
 #include "hal/nrf_vreqctrl.h"
 #endif
 
+#ifdef VPR_PRESENT
+#include "hal/nrf_vpr.h"
+#endif
+
 #ifdef WDT_PRESENT
 #include "hal/nrf_wdt.h"
 #endif

@@ -445,6 +445,43 @@
 #define NHW_UARTE_FLUSH_AMOUNT_BUG 0
 #define NHW_UARTE_CLOCKS {128, 16, 16, 16, 16}
 
+#define NHW_VPR_TOTAL_INST 1
+#define NHW_VPR00 0
+#define NHW_VPR_CPU_NBRS {1} /* VPR00 is expected to be the CPU nbr 1 */
+#define NHW_VPR_VEIF_MAX_TASKSEVENTS 32 /* For all instances */
+#define NHW_VPR_VEIF_BASE_TASKSEVENTS_MASK {0x007F0000} /* Overall available TASKS/EVENTS */
+#define NHW_VPR_VEIF_DPPI_MASK {0x000F0000} /* Which are connected to the DPPI */
+#define NHW_VPR_VEIF_EXTIRQ_MASK {0x00100000}  /* Which EVENTS drive the external IRQ line */
+#define NHW_VPR_VEIF_CLICIRQ_MASK {0x007F0000} /* Which TASKS are connected to the CLIC */
+
+#define NHW_VPR_INT_MAP {{-1, 76}, \
+                        } /* Router, VPR00_IRQn */
+#define NHW_VPR_CLIC_INT_MAP {{ \
+ {1, 0}, {1, 1}, {1, 2}, {1, 3}, {1, 4}, \
+ {1, 5}, {1, 6}, {1, 7}, {1, 8}, {1, 9}, \
+ {1, 10}, {1, 11}, {1, 12}, {1, 13}, {1, 14}, \
+ {1, 15}, {1, 16}, {1, 17}, {1, 18}, {1, 19}, \
+ {1, 20}, {1, 21}, {1, 22}, {1, 23}, {1, 24}, \
+ {1, 25}, {1, 26}, {1, 27}, {1, 28}, {1, 29}, \
+ {1, 30}, {1, 31}, \
+}} /* CLIC, VPRCLIC_0_IRQn..VPRCLIC_31_IRQn */
+
+#define NHW_VPR_DPPI_MAP {0} /* Global */
+#define NHW_VPR_DPPI_CHANNELS_TASKS { \
+  [0 ... NHW_VPR_TOTAL_INST - 1][0 ... NHW_VPR_VEIF_MAX_TASKSEVENTS - 1] = -1, \
+  [0][16] = 0,\
+  [0][17] = 1,\
+  [0][18] = 2,\
+  [0][19] = 3,\
+}
+#define NHW_VPR_DPPI_CHANNELS_EVENTS { \
+  [0 ... NHW_VPR_TOTAL_INST - 1][0 ... NHW_VPR_VEIF_MAX_TASKSEVENTS - 1] = -1, \
+  [0][16] = 0,\
+  [0][17] = 1,\
+  [0][18] = 2,\
+  [0][19] = 3,\
+}
+
 #define NHW_FAKE_TIMER_TOTAL_INST 2
 #define NHW_FAKE_TIMER_INT_MAP {{0 , 0}, \
                                 {1 , 0}} /*App core & flpr core, -*/

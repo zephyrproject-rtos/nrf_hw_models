@@ -24,3 +24,13 @@ __attribute__((weak)) void phy_sync_ctrl_set_last_phy_sync_time(bs_time_t time){
 __attribute__((weak))  unsigned int bsim_args_get_global_device_nbr(void){
   return 0;
 }
+
+__attribute__((weak)) int nce_get_current_cpu_nbr(void){
+  static bool ever_warned;
+  if (!ever_warned) {
+    bs_trace_warning_line("%s: The HW models expect a new enough native simulator which provides this API."
+        "This weak function just returns -1\n", __func__);
+    ever_warned = true;
+  }
+  return -1;
+}

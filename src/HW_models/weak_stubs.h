@@ -17,6 +17,7 @@ extern "C" {
 extern void phy_sync_ctrl_set_last_phy_sync_time(bs_time_t time);
 extern void bs_add_extra_dynargs(bs_args_struct_t *args_struct_toadd);
 extern unsigned int bsim_args_get_global_device_nbr(void);
+extern int nce_get_current_cpu_nbr(void);
 
 #ifdef __cplusplus
 }

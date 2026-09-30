@@ -44,3 +44,4 @@ src/HW_models/NHW_UART_backend_fifo.c
 src/HW_models/NHW_UART_backend_pty.c
 src/HW_models/NHW_UART_backend_pty_int.c
 src/HW_models/NHW_UART_be_loopb.c
+src/HW_models/NHW_VPR.c

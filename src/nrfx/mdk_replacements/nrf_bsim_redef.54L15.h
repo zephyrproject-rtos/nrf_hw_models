@@ -245,10 +245,11 @@ extern void* nhw_RRAMC_get_RRAM_base_address(unsigned int inst);
 extern NRF_RRAMC_Type *NRF_RRAMC_regs_p[];
 #undef NRF_RRAMC_S_BASE
 #define NRF_RRAMC_S_BASE (NRF_RRAMC_regs_p[0])
+extern NRF_VPR_Type NRF_VPR_regs[];
 #undef NRF_VPR00_NS_BASE
-#define NRF_VPR00_NS_BASE NULL
+#define NRF_VPR00_NS_BASE (&NRF_VPR_regs[NHW_VPR00])
 #undef NRF_VPR00_S_BASE
-#define NRF_VPR00_S_BASE NULL
+#define NRF_VPR00_S_BASE (&NRF_VPR_regs[NHW_VPR00])
 extern NRF_GPIO_Type NRF_GPIO_regs[];
 #undef NRF_P2_NS_BASE
 #define NRF_P2_NS_BASE (&NRF_GPIO_regs[NHW_GPIO_P2])
