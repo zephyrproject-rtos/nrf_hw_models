@@ -1023,10 +1023,10 @@ static void start_Tx(void) {
    * Here we just assume the CRC is configured as it should given the modulation */
   uint32_t crc_init = NRF_RADIO_regs.CRCINIT & RADIO_CRCINIT_CRCINIT_Msk;
   if (nhwra_mode_is_ble()) {
-    append_crc_ble(tx_buf, header_len + payload_len, crc_init);
+    hwm_crc_append_ble24(tx_buf, header_len + payload_len, crc_init);
   } else if (nhwra_mode_is_154()) {
     //15.4 does not CRC the length (header) field
-    append_crc_154(&tx_buf[header_len], payload_len, crc_init);
+    hwm_crc_append_154(&tx_buf[header_len], payload_len, crc_init);
   }
 
   uint main_packet_size; //Main "packet" size (the payload sent thru the phy)
