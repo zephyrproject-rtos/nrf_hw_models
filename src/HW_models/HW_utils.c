@@ -23,6 +23,53 @@ void hwu_reverse_byte_order(const unsigned char *in_data, unsigned char *out_dat
     }
 }
 
+/**
+ * Bitwise reverse 1 byte,
+ * Based on code in the public domain as claimed by the author in this page:
+ * http://graphics.stanford.edu/~seander/bithacks.html#ReverseByteWith64Bits
+ */
+uint8_t hwu_rev_byte(uint8_t input)
+{
+  return ((input * 0x80200802ULL) & 0x0884422110ULL)
+          * 0x0101010101ULL >> 32;
+}
+
+/**
+ * Reverse the bits order in a 32 bit word
+ */
+uint32_t hwu_rev_32(uint32_t input)
+{
+  uint32_t ret;
+  ret = (uint32_t)hwu_rev_byte((input >> 0) & 0xff) << 24
+      | (uint32_t)hwu_rev_byte((input >> 8) & 0xff) << 16
+      | (uint32_t)hwu_rev_byte((input >> 16) & 0xff) << 8
+      | (uint32_t)hwu_rev_byte((input >> 24) & 0xff);
+  return ret;
+}
+
+/**
+ * Reverse the bits order in a 24 bit word
+ */
+uint32_t hwu_rev_24(uint32_t input)
+{
+  uint32_t ret;
+  ret = (uint32_t)hwu_rev_byte((input >> 0) & 0xff) << 16
+      | (uint32_t)hwu_rev_byte((input >> 8) & 0xff) << 8
+      | (uint32_t)hwu_rev_byte((input >> 16) & 0xff);
+  return ret;
+}
+
+/**
+ * Reverse the bits order in a 16 bit word
+ */
+uint16_t hwu_rev_16(uint16_t input)
+{
+  uint16_t ret;
+  ret = (uint16_t)hwu_rev_byte((input >> 0) & 0xff) << 8
+      | (uint16_t)hwu_rev_byte((input >> 8) & 0xff) << 0;
+  return ret;
+}
+
 /*
  * Read a line from a file into a buffer (s), while
  * skipping duplicate spaces (unless they are quoted), comments (#...),
