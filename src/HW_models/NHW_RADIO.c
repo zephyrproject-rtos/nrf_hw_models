@@ -44,10 +44,8 @@
  *         are not accounted for when handling the length field in this model. The model will always
  *         act on the transmitted length field.
  *
- * Note11: Only the BLE & 15.4 CRC polynomials are supported
- *         During reception we assume that CRCPOLY and CRCINIT are correct on both sides, and just rely on the phy bit error reporting to save processing time
- *         On transmission we generate the correct CRC for correctness of the channel dump traces (and Ellisys traces)
- * Note11b:The CRC configuration is directly deduced from the modulation, only BLE and 154 CRCs are supported so far
+ * Note11: Only the BLE & 15.4 CRC polynomials are supported. CRCPOLY is presumed correct.
+ * Note11b:The CRC configuration is directly deduced from the modulation, only BLE and 154 CRCs are supported so far.
  *
  * Note12: * CCA or ED procedures cannot be performed while the RADIO is performing an actual packet reception (they are exclusive)
  *         * In CCA Mode2 & 3, this model (due to the Phy) does not search for a SFD, or for a correlation peak
@@ -1139,9 +1137,13 @@ static void Rx_handle_end_response(bs_time_t end_time) {
     //end of the CRC
 
     NRF_RADIO_regs.RXCRC = nhwra_get_rx_crc_value(rx_buf, rx_status.rx_resp.packet_size);
+
     if ((rx_status.rx_resp.status == P2G4_RXSTATUS_OK) && !is_cheat_rx_fail_crc()) {
-      rx_status.CRC_OK = 1;
-      NRF_RADIO_regs.CRCSTATUS = 1;
+      bool crc_ok = nhwra_check_packet_crc(rx_buf, rx_status.rx_resp.packet_size, NRF_RADIO_regs.RXCRC);
+      if (crc_ok) {
+        rx_status.CRC_OK = 1;
+        NRF_RADIO_regs.CRCSTATUS = 1;
+      }
     }
   }
 }

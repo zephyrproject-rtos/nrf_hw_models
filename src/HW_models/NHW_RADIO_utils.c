@@ -15,6 +15,8 @@
 #include "bs_utils.h"
 #include "bs_pc_2G4.h"
 #include "bs_pc_2G4_utils.h"
+#include "crc.h"
+#include "HW_utils.h"
 #include "NHW_common_types.h"
 #include "NHW_config.h"
 #include "NHW_peri_types.h"
@@ -724,6 +726,33 @@ uint32_t nhwra_get_rx_crc_value(uint8_t *rx_buf, size_t rx_packet_size) {
 #endif
   }
   return crc;
+}
+
+/**
+ * Check the packet CRC value for a given packet buffer and packet size
+ * against a reference value
+ * Parameters:
+ *    buf: Pointer to the buffer containing the packet
+ *    packet_size: Number of bytes in the packet (including CRC)
+ *    rx_crc: CRC value to compare against
+ * Returns:
+ *    true if equal, false otherwise
+ */
+bool nhwra_check_packet_crc(uint8_t *buf, size_t packet_size, uint32_t rx_crc)
+{
+  uint32_t crc = 0;
+  uint32_t crc_init = NRF_RADIO_regs.CRCINIT & RADIO_CRCINIT_CRCINIT_Msk;
+  uint crc_len = nhwra_get_crc_length();
+
+  //Eventually this should be generalized with the packet configuration
+  if (nhwra_mode_is_ble() && (packet_size >= crc_len )) {
+    crc = hwm_crc_update_ble24(hwu_rev_24(crc_init), buf, packet_size - crc_len);
+  } else if (nhwra_mode_is_154() && (packet_size >= crc_len + 1)) {
+    //The 15.4 CRC does not include the PHR
+    crc = hwm_crc_update_154(hwu_rev_16(crc_init), &buf[1], packet_size - crc_len - 1);
+  }
+
+  return (rx_crc == crc);
 }
 
 /**
