@@ -31,6 +31,16 @@ void nrf_ipc_event_clear(NRF_IPC_Type * p_reg, nrf_ipc_event_t ipc_event)
   nhw_IPC_regw_sideeffects_EVENTS_all(i);
 }
 
+void nrf_ipc_receive_config_set(NRF_IPC_Type * p_reg,
+                                uint8_t        index,
+                                uint32_t       channels_mask)
+{
+  p_reg->RECEIVE_CNF[index] = channels_mask;
+
+  int i = ipc_number_from_ptr(p_reg);
+  nhw_IPC_regw_sideeffects_RECEIVE_CNF(i, index);
+}
+
 void nrf_ipc_int_enable(NRF_IPC_Type * p_reg, uint32_t mask)
 {
   p_reg->INTENSET = mask;

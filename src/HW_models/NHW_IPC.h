@@ -21,6 +21,7 @@ void nhw_IPC_regw_sideeffects_EVENTS_all(uint inst);
 void nhw_IPC_regw_sideeffects_INTEN(uint inst);
 void nhw_IPC_regw_sideeffects_INTENSET(uint inst);
 void nhw_IPC_regw_sideeffects_INTENCLR(uint inst);
+void nhw_IPC_regw_sideeffects_RECEIVE_CNF(uint inst, uint index);
 void nhw_IPC_regw_sideeffects_SUBSCRIBE_SEND(uint inst, uint ch);
 
 #ifdef __cplusplus

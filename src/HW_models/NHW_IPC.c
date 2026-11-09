@@ -17,11 +17,19 @@
  * Notes:
  *   * Close enough events in the IPC channels are not merged.
  *     Note the spec does not specify t_IPC.
+ *   * Deviation from the real HW: If a channel is signaled while the core owning the receiving IPC
+ *     instance has not yet booted (and therefore did not yet configure RECEIVE_CNF), the signal is
+ *     not lost: it is kept pending, and delivered as soon as that core configures a RECEIVE_CNF
+ *     listening to that channel. This is because in the simulation the cores are not started
+ *     simultaneously, and the first core may run before the other one boots.
+ *     In real HW, RECEIVE_CNF is configured early on both cores when when IPC backend is initialized
+ *     IPC signals triggered during opening are not lost.
  */
 
 #include <string.h>
 #include <stdint.h>
 #include "nsi_tasks.h"
+#include "nsi_cpu_ctrl.h"
 #include "bs_tracing.h"
 #include "bs_oswrap.h"
 #include "NHW_common_types.h"
@@ -38,9 +46,19 @@ struct ipc_status {
   uint dppi_map;   //To which DPPI instance are this IPC subscribe&publish ports connected to
   //Which of the subscription ports are currently connected, and to which channel:
   struct nhw_subsc_mem* subscribed;   //[n_ch]
+
+  /*
+   * Mask of IPC channels which were signaled while the core owning this IPC instance was not yet
+   * booted (and so it could not have configured its receive events yet).
+   * They are delivered when that core configures a RECEIVE_CNF listening to them.
+   */
+  uint32_t sent_before_boot;
 };
 
 static uint nhw_IPC_dppi_map[NHW_IPC_TOTAL_INST] = NHW_IPC_DPPI_MAP;
+/* Mapping of peripheral instance to {int controller instance, int number}
+ * Note the int controller instance is also the index of the core which owns this IPC instance */
+static struct nhw_irq_mapping nhw_ipc_irq_map[NHW_IPC_TOTAL_INST] = NHW_IPC_INT_MAP;
 static struct ipc_status nhw_ipc_st[NHW_IPC_TOTAL_INST];
 NRF_IPC_Type NRF_IPC_regs[NHW_IPC_TOTAL_INST];
 
@@ -79,8 +97,6 @@ NSI_TASK(nhw_ipc_free, ON_EXIT_PRE, 100);
 
 static void nhw_IPC_eval_interrupt(uint inst) {
   static bool ipc_int_line[NHW_IPC_TOTAL_INST]; /* Is this IPC currently driving its interrupt line high */
-  /* Mapping of peripheral instance to {int controller instance, int number} */
-  static struct nhw_irq_mapping nhw_ipc_irq_map[NHW_IPC_TOTAL_INST] = NHW_IPC_INT_MAP;
   bool new_int_line = false;
 
   struct ipc_status *this = &nhw_ipc_st[inst];
@@ -124,10 +140,25 @@ static void nhw_IPC_signal_EVENT(uint inst, uint ch) {
 static void nhw_IPC_notify_ipc_ch(uint ch) {
   for (uint inst = 0; inst < NHW_IPC_TOTAL_INST; inst++) {
     uint ch_mask = 1 << ch;
+    bool delivered = false;
     for (uint i = 0; i < nhw_ipc_st[inst].n_ch; i++) {
       if (NRF_IPC_regs[inst].RECEIVE_CNF[i] & ch_mask) {
         nhw_IPC_signal_EVENT(inst, i);
+        delivered = true;
       }
+    }
+    /*
+     * If the core owning this IPC instance has not been booted yet (so it cannot have configured
+     * its RECEIVE_CNF yet), we remember the signal, and deliver it as soon as it configures
+     * a receive event listening to this channel.
+     * (This is not what the real HW would do, but in the simulation the order in which the cores
+     * are booted is not under the control of the embedded SW, and SW would otherwise lose
+     * any signals sent before the other core's boot)
+     */
+    if (!delivered && !nsi_cpu_is_booted(nhw_ipc_irq_map[inst].cntl_inst)) {
+      nhw_ipc_st[inst].sent_before_boot |= ch_mask;
+      bs_trace_raw_time(8, "IPC%u: signal on channel %u sent before its core booted; "
+                           "kept pending\n", inst, ch);
     }
   }
 }
@@ -154,6 +185,26 @@ static void nhw_IPC_tasks_send_wrap(void* param) {
   unsigned int inst = (uintptr_t)param >> 16;
   uint n = (uintptr_t)param & 0xFFFF;
   nhw_IPC_TASKS_SEND(inst, n);
+}
+
+/*
+ * To be called after RECEIVE_CNF[index] of IPC instance <inst> has been written.
+ * Delivers any signal which was sent to this IPC while its core was not yet booted,
+ * and which matches the new receive configuration.
+ */
+void nhw_IPC_regw_sideeffects_RECEIVE_CNF(uint inst, uint index) {
+  struct ipc_status *this = &nhw_ipc_st[inst];
+
+  CHECK_VALID_CHANNEL(inst, index, "RECEIVE_CNF");
+
+  uint32_t pending = this->sent_before_boot & NRF_IPC_regs[inst].RECEIVE_CNF[index];
+
+  if (pending) {
+    this->sent_before_boot &= ~pending;
+    bs_trace_raw_time(8, "IPC%u: delivering pending signal(s) 0x%x to RECEIVE_CNF[%u]\n",
+                      inst, pending, index);
+    nhw_IPC_signal_EVENT(inst, index);
+  }
 }
 
 void nhw_IPC_regw_sideeffects_SUBSCRIBE_SEND(uint inst, uint ch) {
